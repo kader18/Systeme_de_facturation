@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br>
+
+<h1 class="text-capitalize text-center mx-10 bg-dark text-white">Enregistrez une nouvelle facture</h1>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="customer">Client</label>
+            <select name="customer" class="form-control" id="customer" required>
+                {% for client in customers %}
+                    <option value="{{ client.name }}">{{ client.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="invoice_type">Type de facture</label>
+            <select name="invoice_type" class="form-control" id="invoice_type" required>
+                <option value="">Choisir le type de la facture ...</option>
+                <option value="R">Reçu</option>
+                <option value="P">Proforma facture</option>
+                <option value="F">Facture</option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="invoice_date_time">Date et Heure</label>
+            <input name="invoice_date_time" required type="date" class="form-control" id="invoice_date_time">
+        </div>
+
+    </div>
+    <!-- <div class="form-row">
+        <div class="form-group col-lg-12 col-md-12">
+            <label for="total">Total</label>
+            <input type="number" required name="total" class="form-control" id="total">
+        </div>
+    </div> -->
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="paid">Payée</label>
+            <input type="radio" id="html" name="modified" value="True">
+                    <label class="text-white bg-primary" for="html">Oui</label>
+     
+                    <input type="radio" id="css" name="modified" value="False">
+                    <label class="text-white bg-danger" for="css">Non</label><br>
+        </div>
+    </div> 
+
+    <div class="form-row">
+
+        <div class="form-group col-md-12">
+            <label for="comments">Commentaire</label>
+            <input name="comments" required type="textarea" class="form-control" id="comments" cols="50">
+        </div>
+    </div> 
+
+    <button type="submit" class="btn btn-primary text-center col-12">Enregistrez</button>
+    <br><br>
+</form>
+
+
+
+{% endblock content %}

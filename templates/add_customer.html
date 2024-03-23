@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<br><br>
+
+<h1 class="text-capitalize text-center mx-10 bg-dark text-white">Enregistrez un nouveau client</h1>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="name">Nom</label>
+            <input name="name" required type="text" class="form-control" id="name" placeholder="Nom et prenom du client">
+        </div>
+        
+        <div class="form-group col-md-4">
+            <label for="email">Email</label>
+            <input name="email" required type="email" class="form-control" id="email" placeholder="l'email du client">
+        </div>
+
+        <div class="form-group col-md-2">
+            <label for="phone">Téléphone</label>
+            <input name="phone" required type="number" class="form-control" id="phone" placeholder="le numéro du client">
+        </div>
+
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-lg-6 col-md-6">
+            <label for="sex">Sexe</label>
+            <select name="sex" class="form-control" id="sex" required>
+                <option value="">Choisir ton sexe ...</option>
+                <option value="M">Masculin</option>
+                <option value="F">Feminin</option>
+                <option value="A">Autre</option>
+            </select>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6">
+            <label for="age">Age</label>
+            <select name="age" class="form-control" id="age" required>
+                <option value="">Choisir la tranche âge ...</option>
+                <option value="12-19">12-19</option>
+                <option value="20-35">20-35</option>
+                <option value="35-plus">35-plus</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-12 col-md-12">
+            <label for="address">Adresse</label>
+            <input type="text" required name="address" class="form-control" id="address" placeholder="L'adresse du client">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="city">Ville</label>
+            <input name="city" required type="text" class="form-control" id="city" placeholder="la ville du client">
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="zip">Code postal</label>
+            <input name="zip" required type="text" class="form-control" id="zip" placeholder="le code postal du client">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary text-center col-12">Enregistrez</button>
+    <br><br>
+</form>
+
+
+<!-- <div class="row">
+    <a href="#" class="btn col-md-4 btn-primary">
+       Ajoutez une nouvelle facture <span class="badge text-bg-secondary"></span>
+    </a>
+ 
+    <a href='#' class="col-md-4">
+       <span class="badge text-bg-secondary"></span>
+    </a>
+ 
+    <a href="#" class="btn col-md-4 btn-primary mt-3">
+        Ajoutez un nouveau client <span class="badge text-bg-secondary"></span>
+    </a>
+ 
+ </div>
+ 
+ <br> <br>
+ 
+ <div class="form-group ">
+    <input id="search" class="form-control" type="text" placeholder="Search....">
+ </div>
+ 
+ <div>
+    <table class="table table-striped-columns">
+       <thead>
+          <tr>
+             <th scope="col">#</th>
+             <th scope="col">NOM DU CLIENT</th>
+             <th scope="col">EMAIL</th>
+             <th scope="col">TELEPHONE</th>
+             <th scope="col">ADRESSE</th>
+             <th scope="col">SEXE</th>
+             <th scope="col">AGE</th>
+             <th scope="col">VILLE</th>
+             <th scope="col">ZIP CODE</th>
+          </tr>
+       </thead>
+       <tbody id="myTable">
+          {% if customers %}
+          {% for client in customers %}
+          <tr>
+             <th scope="row">{{ client.pk }}</th>
+             <td>{{client.name}}</td>
+             <td>{{client.email}}</td>
+             <td>{{ client.phone }}</td>
+             <td>{{ client.address }}</td>
+             <td>{{client.sex }}</td>
+             <td>{{client.age }}</td>
+             <td>{{client.city }}</td>
+             <td>{{client.zip_code }}</td>
+             <td>
+                <a href="" title="Detail" class="badge text-white bg-success">Vue</a>
+ 
+                <button id="btn-invoice-sup" type="button" data-toggle="modal" data-target="#supprimer"
+                   class="badge text-white bg-danger" title="Supprimer" data-id="{{ client.pk }}"
+                   data-customer="{{client.name}}">Supprimer
+                </button>
+ 
+                <button id="btn-invoice-mod" type="button" data-toggle="modal" title="Modifier" data-target="#modifier"
+                   data-id="{{client.pk}}" data-customer="{{client.name}}"
+                   class="badge text-dark bg-warning"> Modifier
+                </button>
+             </td>
+          </tr>
+ 
+          {% endfor %}
+
+          
+          <p class="text-center text-white">Aucun client n'a été trouvé</p>
+          {% endif %}
+ 
+ 
+       </tbody>
+ 
+    </table>
+ </div> -->
+ 
+ <!-- Modal modifier -->
+ <!-- <div class="modal fade" id="modifier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title text-dark text-center" id="exampleModalLabel">Modification</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          <form method="post">
+             {% csrf_token %}
+             <div class="modal-body">
+ 
+                <input name="id_modified" type="hidden" id="id_modified">
+ 
+                <label id="label_id" class="text-dark checkbox-inline"> <strong id="strong_id"> Êtes-vous sûr de vouloir modifier le client ?</strong></label>
+ 
+                <input type="radio" id="html" name="modified" value="True">
+                <label class="text-white bg-primary" for="html">Oui</label>
+ 
+                <input type="radio" id="css" name="modified" value="False">
+                <label class="text-white bg-danger" for="css">Non</label><br>
+ 
+             </div>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="submit" class="btn btn-primary">Enregistrez</button>
+             </div>
+          </form>
+       </div>
+    </div>
+ </div> -->
+ <!-- end modal-->
+ 
+ <!-- Modal suppression -->
+ <!-- <div class="modal fade" id="supprimer" tabindex="-1" role="dialog" aria-labelledby="sexampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title text-dark" id="sexampleModalLabel">Supprimer le client</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          <div class="modal-body">
+             <form method="post">
+                {% csrf_token %}
+                <input name="id_supprimer" type="hidden" id="id_supprimer">
+                <label id="label_id_s" class="text-dark checkbox-inline"> <strong id="strong_id_s">Êtes-vous sûr de vouloir supprimer le client  ?</strong></label>
+ 
+                <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                   <button type="submit" class="btn btn-danger">Supprimer</button>
+                </div>
+             </form>
+          </div>
+ 
+       </div>
+    </div>
+ </div> -->
+ <!-- end modal-->
+ 
+ <!-- <br><br>
+ 
+ <script type="text/javascript">
+ 
+    // modification
+ 
+    $(document).on('click', '#btn-invoice-mod', function(){
+       let invoice_id = $(this).data('id');
+       let customer = $(this).data('customer');
+       $('#id_modified').val(invoice_id);
+ 
+    })
+ 
+    // deleting of invoice
+ 
+    $(document).on('click', '#btn-invoice-sup', function(){
+       let invoice_id = $(this).data('id');
+       let customer = $(this).data('customer');
+       $('#id_supprimer').val(invoice_id);
+ 
+    })
+ 
+ 
+ 
+ </script>
+ 
+ 
+ <script>
+ 
+    $(document).ready(function(){
+       $("#search").on("keyup", function(){
+          var value = $(this).val().toLowerCase();
+          $("#myTable tr").filter(function(){
+             $(this).toggle($(this).text().toLocaleLowerCase().indexOf(value)>-1)
+          });
+       });
+    });
+ 
+ </script> -->
+
+
+
+
+{% endblock content %}
