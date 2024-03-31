@@ -87,6 +87,7 @@ class Article(models.Model):
     @property
     def get_total(self):
         total = self.quantity * self.unit_price
+        return total
 
     def __str__(self):
         return self.name

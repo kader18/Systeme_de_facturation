@@ -3,6 +3,7 @@ from django.views import View
 from .models import *
 from django.contrib import messages
 
+from django.db import transaction
 
 
 class HomeView(View):
@@ -72,40 +73,63 @@ class AddInvoiceView(View):
     """Ajout de facture"""
 
     templates_name = 'add_invoices.html'
-    invoices = Invoice.objects.select_related('customer', 'save_by').all()
     customers = Customer.objects.select_related('save_by').all()
 
 
     context = {
-        'invoices': invoices,
         'customers': customers,
     }
 
     def get(self, request, *args, **kwargs):
         return render(request, self.templates_name, self.context)
     
+    @transaction.atomic()
     def post(self, request, *args, **kwargs):
-        data = request.POST
         
-        context = {
-            "customer": data.get('customer'),
-            "invoice_date_time": data.get('invoice_date_time'),
-            "total": data.get('total'),
-            "paid": data.get('paid'),
-            "invoice_type": data.get('invoice_type'),
-            "comments": data.get('comments'),
-            "last_updated_date": data.get('last_updated_date'),
-            "save_by": request.user
-        }
-        
+        items = []
         try:
-            created = Invoice.objects.create(**context)
-            if created:
-                messages.success(request,"La facture a été créé avec succès")
-            else:
-                 messages.error(request, "Veuillez recommencer encore")
-        except Exception as e:
-             messages.error(request, f"Une erreur a été produite {e}")
+           customer = request.POST.get('customer')
+           type = request.POST.get('invoice_type')
+           articles = request.POST.getlist('article')
 
+           qties = request.POST.getlist('qty')
+           units = request.POST.getlist('unit')
+
+           total_a = request.POST.getlist('total-a')
+
+           total = request.POST.get('total')
+
+           comment = request.POST.get('comment')
+
+           invoice_object = {
+               'customer_id': customer,
+               'save_by': request.user,
+               'total': total,
+               'invoice_type': type,
+               'comments': comment
+           }
+
+           invoice = Invoice.objects.create(**invoice_object)
+
+           for item, article in enumerate(articles):
+               data = Article(
+                   invoice_id = invoice.id,
+                   save_by = request.user,
+                   name = article,
+                   quantity = qties[item],
+                   unit_price = units[item],
+                   total = total_a[item]
+               )
+
+               items.append(data)
+
+           created = Article.objects.bulk_create(items)
+
+           if created:
+               messages.success(request, 'ça été créé avec succès') 
+           else:
+               messages.error(request, "Désolé, essayez à nouveau")
+        except Exception as e:
+                messages.error(request, f'Désolé une erreur est survenue {e}')
         
         return render(request, self.templates_name, self.context)
