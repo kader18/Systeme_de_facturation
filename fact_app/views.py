@@ -1,26 +1,75 @@
+import datetime
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from .models import *
 from django.contrib import messages
 
+import pdfkit
+
+from django.template.loader import get_template
+
 from django.db import transaction
 
+from .utils import pargination, get_invoice
 
 class HomeView(View):
     """Vue principale"""
 
     templates_name = 'index.html'
-    invoices = Invoice.objects.select_related('customer', 'save_by').all()
+    invoices = Invoice.objects.select_related('customer', 'save_by').all().order_by('-invoice_date_time')
 
     context = {
         'invoices': invoices,
     }
 
     def get(self, request, *args, **kwargs):
+
+        items = pargination(request, self.invoices)
+
+        self.context['invoices'] = items
+
         return render(request, self.templates_name, self.context)
     
 
     def post(self, request, *args, **kwargs):
+
+        # Modification de facture
+
+        if request.POST.get('id_modified'):
+            paid = request.POST.get('modified')
+
+            try:
+                obj = Invoice.objects.get(id=request.POST.get('id_modified'))
+
+                if paid == 'True':
+                    obj.paid = True
+                else:
+                    obj.paid = False
+                obj.save()
+                messages.success(request, "La modification a été fait avec succès")
+
+            except Exception as e :
+                messages.error(request, f"Une erreur est survenue lors du traitement {e}")
+
+
+        # Suppression de facture
+                
+        if request.POST.get('id_supprimer'):
+           
+            try:
+                obj = Invoice.objects.get(pk=request.POST.get('id_supprimer'))
+                obj.delete()
+        
+                messages.success(request, "La suppression a été effectué avec succès")
+
+            except Exception as e :
+                messages.error(request, f"Une erreur est survenue lors du traitement {e}")
+
+
+        items = pargination(request, self.invoices)
+
+        self.context['invoices'] = items
         return render(request, self.templates_name, self.context)
     
 class AddCustomerView(View):
@@ -133,3 +182,54 @@ class AddInvoiceView(View):
                 messages.error(request, f'Désolé une erreur est survenue {e}')
         
         return render(request, self.templates_name, self.context)
+
+
+class InvoiceVisualizationView(View):
+    """ Visualiser la facture"""
+
+    template_name = "invoice.html"
+
+    def get(self, request, *args, **kwargs):
+
+        pk = kwargs.get('pk')
+
+        context = get_invoice(pk)
+
+        return render(request, self.template_name, context)
+    
+
+def get_invoice_pdf(request, *args, **kwargs):
+    """ générer un fichier pdf """
+
+    pk = kwargs.get('pk')
+
+    context = get_invoice(pk)
+
+    context['date'] = datetime.datetime.today()
+
+    #Obtenir le fichier html
+
+    template = get_template('invoice-pdf.html')
+
+    # render
+    html = template.render(context)
+
+    #Options du PDF
+
+    options = {
+        'page-size': 'Letter',
+        'encoding': 'UTF-8'
+    }
+
+    # générer le fichier PDF
+
+    config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+
+    pdf = pdfkit.from_string(html, False, options, configuration=config)
+
+    response = HttpResponse(pdf, content_type = 'application/pdf')
+    
+    response['Content-Disposition'] = 'attachement'
+
+    return response
+
