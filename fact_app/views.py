@@ -11,9 +11,17 @@ from django.template.loader import get_template
 
 from django.db import transaction
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .utils import pargination, get_invoice
 
-class HomeView(View):
+from .decorators import *
+
+from django.utils.translation import gettext as _
+
+
+class HomeView(LoginRequiredSuperuserMixim, View):
     """Vue principale"""
 
     templates_name = 'index.html'
@@ -47,10 +55,10 @@ class HomeView(View):
                 else:
                     obj.paid = False
                 obj.save()
-                messages.success(request, "La modification a été fait avec succès")
+                messages.success(request, _("La modification a été fait avec succès"))
 
             except Exception as e :
-                messages.error(request, f"Une erreur est survenue lors du traitement {e}")
+                messages.error(request, _(f"Une erreur est survenue lors du traitement {e}"))
 
 
         # Suppression de facture
@@ -61,10 +69,10 @@ class HomeView(View):
                 obj = Invoice.objects.get(pk=request.POST.get('id_supprimer'))
                 obj.delete()
         
-                messages.success(request, "La suppression a été effectué avec succès")
+                messages.success(request, _("La suppression a été effectué avec succès"))
 
             except Exception as e :
-                messages.error(request, f"Une erreur est survenue lors du traitement {e}")
+                messages.error(request, _(f"Une erreur est survenue lors du traitement {e}"))
 
 
         items = pargination(request, self.invoices)
@@ -72,7 +80,7 @@ class HomeView(View):
         self.context['invoices'] = items
         return render(request, self.templates_name, self.context)
     
-class AddCustomerView(View):
+class AddCustomerView(LoginRequiredSuperuserMixim, View):
 
     """Ajout d'un nouveau client"""
     
@@ -107,17 +115,17 @@ class AddCustomerView(View):
         try:
             created = Customer.objects.create(**context)
             if created:
-                messages.success(request,f"Le client {data.get('name')} a été créé avec succès")
+                messages.success(request, _(f"Le client {data.get('name')} a été créé avec succès"))
             else:
-                 messages.error(request, "Veuillez recommencer encore")
+                 messages.error(request, _("Veuillez recommencer encore"))
         except Exception as e:
-             messages.error(request, f"Une erreur a été produite {e}")
+             messages.error(request, _(f"Une erreur a été produite {e}"))
 
         
 
         return render(request, self.templates_name, self.context)
     
-class AddInvoiceView(View):
+class AddInvoiceView(LoginRequiredSuperuserMixim, View):
 
     """Ajout de facture"""
 
@@ -175,16 +183,16 @@ class AddInvoiceView(View):
            created = Article.objects.bulk_create(items)
 
            if created:
-               messages.success(request, 'ça été créé avec succès') 
+               messages.success(request, _('ça été créé avec succès')) 
            else:
-               messages.error(request, "Désolé, essayez à nouveau")
+               messages.error(request, _("Désolé, essayez à nouveau"))
         except Exception as e:
-                messages.error(request, f'Désolé une erreur est survenue {e}')
+                messages.error(request, _(f'Désolé une erreur est survenue {e}'))
         
         return render(request, self.templates_name, self.context)
 
 
-class InvoiceVisualizationView(View):
+class InvoiceVisualizationView(LoginRequiredSuperuserMixim, View):
     """ Visualiser la facture"""
 
     template_name = "invoice.html"
@@ -196,8 +204,9 @@ class InvoiceVisualizationView(View):
         context = get_invoice(pk)
 
         return render(request, self.template_name, context)
-    
 
+
+@superuser_required
 def get_invoice_pdf(request, *args, **kwargs):
     """ générer un fichier pdf """
 

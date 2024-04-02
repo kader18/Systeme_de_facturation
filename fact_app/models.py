@@ -2,6 +2,9 @@ from django import forms
 from django.db import models
 from django.contrib.auth.models import User
 
+#Traduction
+from django.utils.translation import gettext_lazy as _
+
 
 class Customer(models.Model):
     """
@@ -9,8 +12,8 @@ class Customer(models.Model):
 
     """
     SEX_TYPES = (
-        ('M', 'Masculin'),
-        ('F', 'Feminin'),
+        ('M', _('Masculin')),
+        ('F', _('Feminin')),
     )
 
     name = models.CharField(max_length=132)
@@ -25,8 +28,8 @@ class Customer(models.Model):
     save_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = "Customer"
-        verbose_name_plural = "Customers"
+        verbose_name = _("Customer")
+        verbose_name_plural = _("Customers")
 
     def __str__(self):
         return self.name
@@ -39,9 +42,9 @@ class Invoice(models.Model):
     """
 
     INVOICE_TYPE = (
-        ('R', 'Reçu'),
-        ('P', 'Proforma facture'),
-        ('F', 'Facture')
+        ('R', _('Reçu')),
+        ('P', _('Proforma facture')),
+        ('F', _('Facture'))
     )
 
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -55,8 +58,8 @@ class Invoice(models.Model):
     comments = models.TextField(null=True, max_length=1000, blank=True)
 
     class Meta:
-        verbose_name = "Invoice"
-        verbose_name_plural = "Invoices"
+        verbose_name = _("Invoice")
+        verbose_name_plural = _("Invoices")
 
     def __str__(self):
         return f'{self.customer.name}_{self.invoice_date_time}'
@@ -82,8 +85,8 @@ class Article(models.Model):
     total = models.DecimalField(max_digits=1000, decimal_places=2)
 
     class Meta:
-        verbose_name = "Article"
-        verbose_name_plural = "Articles"
+        verbose_name = _("Article")
+        verbose_name_plural = _("Articles")
 
     @property
     def get_total(self):

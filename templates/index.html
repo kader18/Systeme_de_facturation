@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% load i18n %}
+
 {% block content %}
     <br><br>
 
@@ -12,7 +14,7 @@
    <br>
    <div class="row">
       <a href="{% url 'add-customer' %}" class="btn col-12 btn-primary">
-          Ajoutez un nouveau client <span class="badge text-bg-secondary"></span>
+         {% translate 'Ajoutez un nouveau client' %} <span class="badge text-bg-secondary"></span>
       </a>
    </div>
      
@@ -27,12 +29,12 @@
            <thead>
               <tr>
                  <th scope="col">#</th>
-                 <th scope="col">NOM DU CLIENTS</th>
-                 <th scope="col">DATE</th>
-                 <th scope="col">TOTAL</th>
-                 <th scope="col">PAIE</th>
-                 <th scope="col">TYPE DE FACTURE</th>
-                 <th scope="col">ACTION</th>
+                 <th scope="col">{% translate 'NOM DU CLIENTS' %}</th>
+                 <th scope="col">{% translate 'DATE' %}</th>
+                 <th scope="col">{% translate 'TOTAL' %}</th>
+                 <th scope="col">{% translate 'PAIE' %}</th>
+                 <th scope="col">{% translate 'TYPE DE FACTURE' %}</th>
+                 <th scope="col">{% translate 'ACTION' %}</th>
               </tr>
            </thead>
            <tbody id="myTable">
@@ -52,16 +54,16 @@
                  </td>
                  <td>{{facture.get_invoice_type_display}}</td>
                  <td>
-                    <a href="{% url 'view-invoice' pk=facture.pk %}" title="Detail" class="badge text-white bg-success">Vue</a>
+                    <a href="{% url 'view-invoice' pk=facture.pk %}" title="Detail" class="badge text-white bg-success">{% trans 'Vue' %}</a>
      
                     <button id="btn-invoice-sup" type="button" data-toggle="modal" data-target="#supprimer"
                        class="badge text-white bg-danger" title="Supprimer" data-id="{{ facture.pk }}"
-                       data-customer="{{facture.customer.name}}">Supprimer
+                       data-customer="{{facture.customer.name}}">{% translate 'Supprimer' %}
                     </button>
      
                     <button id="btn-invoice-mod" type="button" data-toggle="modal" title="Modifier" data-target="#modifier"
                        data-id="{{facture.pk}}" data-customer="{{facture.customer.name}}"
-                       class="badge text-dark bg-warning"> Modifier
+                       class="badge text-dark bg-warning"> {% translate 'Modifier' %}
                     </button>
                  </td>
               </tr>
@@ -108,7 +110,7 @@
               {% else %}
 
               
-              <p class="text-center text-white">Aucune facture n'a été trouvé</p>
+              <p class="text-center text-white">{% translate "Aucune facture n'a été trouvé" %}</p>
               {% endif %}
      
      
@@ -123,7 +125,7 @@
         <div class="modal-dialog" role="document">
            <div class="modal-content">
               <div class="modal-header">
-                 <h5 class="modal-title text-dark text-center" id="exampleModalLabel">Modification</h5>
+                 <h5 class="modal-title text-dark text-center" id="exampleModalLabel">{% translate 'Modification' %}</h5>
                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                  </button>
@@ -134,18 +136,18 @@
      
                     <input name="id_modified" type="hidden" id="id_modified">
      
-                    <label id="label_id" class="text-dark checkbox-inline"> <strong id="strong_id"> Cette facture a t-il été payée ?</strong></label>
+                    <label id="label_id" class="text-dark checkbox-inline"> <strong id="strong_id"> {% translate 'Cette facture a t-il été payée ?' %}</strong></label>
      
                     <input type="radio" id="html" name="modified" value="True">
-                    <label class="text-white bg-primary" for="html">Oui</label>
+                    <label class="text-white bg-primary" for="html">{% translate 'Oui' %}</label>
      
                     <input type="radio" id="css" name="modified" value="False">
-                    <label class="text-white bg-danger" for="css">Non</label><br>
+                    <label class="text-white bg-danger" for="css">{% translate 'Non' %}</label><br>
      
                  </div>
                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                    <button type="submit" class="btn btn-primary">Enregistrez</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% translate 'Fermer' %}</button>
+                    <button type="submit" class="btn btn-primary">{% translate 'Enregistrez' %}</button>
                  </div>
               </form>
            </div>
@@ -159,7 +161,7 @@
         <div class="modal-dialog" role="document">
            <div class="modal-content">
               <div class="modal-header">
-                 <h5 class="modal-title text-dark" id="sexampleModalLabel">Supprimer la facture</h5>
+                 <h5 class="modal-title text-dark" id="sexampleModalLabel">{% translate 'Supprimer la facture' %}</h5>
                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                  </button>
@@ -168,11 +170,11 @@
                  <form method="post">
                     {% csrf_token %}
                     <input name="id_supprimer" type="hidden" id="id_supprimer">
-                    <label id="label_id_s" class="text-dark checkbox-inline"> <strong id="strong_id_s">Êtes-vous sûr de vouloir supprimer la facture  ?</strong></label>
+                    <label id="label_id_s" class="text-dark checkbox-inline"> <strong id="strong_id_s">{% translate 'Êtes-vous sûr de vouloir supprimer la facture  ?' %}</strong></label>
      
                     <div class="modal-footer">
-                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                       <button type="submit" class="btn btn-danger" name="supprimer">Supprimer</button>
+                       <button type="button" class="btn btn-secondary" data-dismiss="modal">{% translate 'Fermer' %}</button>
+                       <button type="submit" class="btn btn-danger" name="supprimer">{% translate 'Supprimer' %}</button>
                     </div>
                  </form>
               </div>

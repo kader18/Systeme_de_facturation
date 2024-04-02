@@ -5,6 +5,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+    
+)
+
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 try:
@@ -45,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -111,9 +117,18 @@ LANGUAGE_CODE = "fr"
 
 TIME_ZONE = "UTC"
 
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ('fr', _('French')),
+    ('en', _('English')),
+]
+
 USE_I18N = True
 
 USE_TZ = True
+
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -122,6 +137,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, STATIC_URL),)
 
+
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
@@ -129,3 +145,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGIN_URL = 'admin:login'

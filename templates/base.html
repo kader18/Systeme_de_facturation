@@ -1,5 +1,6 @@
 <html lang="en">
 {% load static %}
+{% load i18n %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,8 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+  {% get_available_languages as LANGUAGES %}
+  {% get_language_info_list for LANGUAGES as languages %}
     <!-- Debut header -->
         <header>
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -25,12 +28,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                       <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Langages
                         </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">English</a>
-                          <a class="dropdown-item" href="#">French</a>
+                        <div class="dropdown-menu" arial-labelledby="navbarDropdown">
+                          {% for language in languages %}
+                          <a class="dropdown-item" href="/{{language.code}}">{{ language.name_local }}</a>
+                          {% endfor %}
                         </div>
                       </li>
                      
