@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% load i18n %} <!--La traduction du texte-->
+
+{% block content %}
+
+<br><br>
+<h1 class="text-capitalize text-center my-10 bg-dark text-white">{% translate 'STATISTIQUES' %}</h1>
+<br><br>
+
+<div class="row">
+    <div class="col-md-4">
+        <div style="background-color: #272e48;" class="card text-white">
+            <div class="card-body">
+                <div class="mr-5">
+                    <strong>
+                        {% translate 'Clients' %}
+                    </strong> : {{ customer }}
+                </div>
+                <a href="#" class="card-footer text-white clearfix small z-1">
+                    <span class="float-left">{% translate 'Nombre total de client' %}</span><br>
+                    <span class="float-right">
+
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div style="background-color: #272e48;" class="card text-white">
+            <div class="card-body">
+                <div class="mr-5">
+                    <strong>
+                        {% translate 'Factures' %}
+                    </strong> : {{ invoice }}
+                </div>
+                <a href="#" class="card-footer text-white clearfix small z-1">
+                    <span class="float-left">{% translate 'Nombre total de facture' %}</span><br>
+                    <span class="float-right">
+
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div style="background-color: #272e48;" class="card text-white">
+            <div class="card-body">
+                <div class="mr-5">
+                    <strong>
+                        {% translate 'Revenu total' %}
+                    </strong> : {{ income }} FCFA
+                </div>
+                <a href="#" class="card-footer text-white clearfix small z-1">
+                    <span class="float-left">{% translate 'Tevenu total' %}</span><br>
+                    <span class="float-right">
+
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<br><br>
+
+<div class="form-row">
+
+    <div class="form-group col-md-12">
+        <label for="year">{% translate 'Année' %}</label>
+        <select name="year" id="year" class="form-control">
+            <option value="all">{% translate 'Tout' %}</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-center txt-white">{% translate 'DIAGRAME DE REVENUE PAR MOIS' %}</h4>
+            <canvas id="myMounth"></canvas>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4 class="text-center text-white" >{% translate 'DIAGRAME AGE CLIENTS' %}</h4>
+            <canvas id="doughnutChart"></canvas>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="text-center text-white" >{% translate 'DIAGRAME GENRE CLIENTS' %}</h4>
+            <canvas id="labelChart"></canvas>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        const ctx = document.getElementById('myMounth');
+        const labels = [
+            'Janvier',
+            'Fevrier',
+            'Mars',
+            'Avril',
+            'Mai',
+            'Juin',
+            'Juillet',
+            'Août',
+            'Septembre',
+            'Octobre',
+            'Novembre',
+            'Decembre'
+        ];
+    
+        var monthly_data = {{ monthly_data|safe }};
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Mois soldé',
+                    data: monthly_data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            
+        });
+    
+        const ctxD = document.getElementById('doughnutChart').getContext('2d');
+        var data_ages = {{ data_ages|safe }};
+        console.log(data_ages);
+        var doughnutChart = new Chart(ctxD, {
+            type: 'doughnut',
+            data: {
+                labels: ["12-19", "20-35", "++35"],
+                datasets: [{
+                    data: data_ages,
+                    backgroundColor: [
+                        'rgb(255, 159, 64)',
+                        'rgb(54, 162, 235)',
+                        'rgb(75, 192, 192)',
+                    ],
+                    hoverBackgroundColor: ["#FF5A5E", "#A883C5", "#616774"]
+                }]
+            },
+            
+        });
+    
+        const ctxP = document.getElementById('labelChart').getContext('2d');
+        var data_sexs = JSON.parse('{{ data_sexs|safe }}');
+        var pieChart = new Chart(ctxP, {
+            type: 'pie',
+            data: {
+                labels: ["Male", "Femelle"],
+                datasets: [{
+                    data: data_sexs,
+                    backgroundColor: [
+                        '#add2cd',
+                        '#272e48',
+                    ],
+                    hoverBackgroundColor: ["#FF5A5E", "#616774"]
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 20,
+                        boxWidth: 10,
+                    }
+                }
+            }
+        });
+    
+        $('#year').on('change', function () {
+            var selectDate = $(this).val();
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+    
+            const csrftoken = getCookie('csrftoken');
+    
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'statistic' %}",
+                data: { 'selected_date': selectDate },
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function (data) {
+                    console.log(data);
+                    barChart.data.datasets[0].data = data.monthly_data;
+                    doughnutChart.data.datasets[0].data = data.data_ages;
+                    pieChart.data.datasets[0].data = data.data_sexs;
+                    barChart.update();
+                    doughnutChart.update();
+                    pieChart.update();
+                }
+            });
+        });
+    
+    </script>
+
+</div>
+
+
+
+{% endblock content %}

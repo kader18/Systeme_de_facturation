@@ -8,5 +8,6 @@ urlpatterns = [
     path("Facture/", views.AddInvoiceView.as_view(), name='add-invoice'),
     path("vue-facture/<int:pk>", views.InvoiceVisualizationView.as_view(), name='view-invoice'),
     path("facture-pdf/<int:pk>", views.get_invoice_pdf, name='invoice-pdf'),
+        path('statistic', views.StatisticView.as_view(), name='statistic')
 ]
 

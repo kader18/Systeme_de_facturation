@@ -14,6 +14,10 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.db.models import Sum 
+from django.db.models.functions import ExtractMonth
+from django.http import JsonResponse
+
 from .utils import pargination, get_invoice
 
 from .decorators import *
@@ -206,6 +210,91 @@ class InvoiceVisualizationView(LoginRequiredSuperuserMixim, View):
         return render(request, self.template_name, context)
 
 
+class StatisticView(LoginRequiredSuperuserMixim, View):
+    """ cette vue permet d'obtenir des statistiques """
+
+    template_name = 'statistic.html'
+
+    def get_sold_data_for_year(self, year=None):
+
+        if year:
+
+            # Filtrer sur l'année spécifiée
+            invoices = Invoice.objects.filter(invoice_date__year=year)
+        else:
+            invoices = Invoice.objects.all()    
+
+        # Annotation du montant vendu par mois 
+        monthly_totals = invoices.annotate(month=ExtractMonth('invoice_date')).values('month')\
+            .annotate(total_amount=Sum('total')).order_by('month') # liste de dict [{'month': 1, 'total_anont':6567567}]
+           
+        result = [0] * 12
+        for item in monthly_totals:
+            result[item['month']-1] = int(item['total_amount'])    
+        return result
+
+
+    def get_stat_data_for_age(self, year=None):
+        range_ages_list = ["0-15", "15-25", "25-35", "35-65", "+65"]
+        data_ages = [Customer.objects.filter(age=range_elt).count() for range_elt in range_ages_list]
+
+        if year:
+            data_ages = [Customer.objects.filter(date__year=year, age=range_elt).count() for range_elt in range_ages_list]
+        return data_ages
+
+
+    def get_stat_sex(self, year=None):
+        data_sexs = [Customer.objects.filter(sex=sex).count() for sex in ['M', 'F']]    
+        if year:
+            data_sexs = [Customer.objects.filter(date__year=year, sex=sex).count() for sex in ['M', 'F']]    
+
+        return data_sexs
+
+
+    def get(self, request, *args, **kwargs):
+       
+        customer = Customer.objects.all().count()
+        invoice  = Invoice.objects.all().count()
+        income = Invoice.objects.aggregate(Sum('total')).get('total__sum')
+
+
+        monthly_data = self.get_sold_data_for_year()
+
+        data_ages = self.get_stat_data_for_age()
+
+        data_sexs = self.get_stat_sex()
+
+        context = {
+            'customer': customer,
+            'invoice': invoice,
+            'income': income,
+            'monthly_data': monthly_data,
+            'data_ages': data_ages,
+            'data_sexs': data_sexs,
+        }
+
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, *args, **kwargs):
+
+        year = request.POST.get('selected_date')
+        if year =='Tous' or year=='All':
+            monthly_data = self.get_sold_data_for_year()
+
+            data_ages = self.get_stat_data_for_age()
+
+            data_sexs = self.get_stat_sex()
+        else:
+            monthly_data = self.get_sold_data_for_year(year=year)
+
+            data_ages = self.get_stat_data_for_age(year=year)
+
+            data_sexs = self.get_stat_sex(year=year)
+        return JsonResponse({'monthly_data':monthly_data, 'data_ages':data_ages, 'data_sexs': data_sexs})    
+
+
+
 @superuser_required
 def get_invoice_pdf(request, *args, **kwargs):
     """ générer un fichier pdf """
@@ -241,4 +330,5 @@ def get_invoice_pdf(request, *args, **kwargs):
     response['Content-Disposition'] = 'attachement'
 
     return response
+
 

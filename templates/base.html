@@ -11,6 +11,10 @@
 
     <!-- Jquery -->
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  
+    <!--Statistique-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabel@2"></script>
 
     <title>{% block title %}{% endblock %}</title>
 </head>
@@ -20,7 +24,7 @@
     <!-- Debut header -->
         <header>
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">SYSTEME DE FACTURATION</a>
+                <a class="navbar-brand" href="{% url 'home' %}">SYSTEME DE FACTURATION</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                 </button>
@@ -52,7 +56,7 @@
                         <a class="dropdown-item" href="{% url 'add-customer' %}">Ajouter un client</a>
                         <a class="dropdown-item" href="#">Ajoutez un admistrateur</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Statistique</a>
+                        <a class="dropdown-item" href="{% url 'statistic' %}">Statistique</a>
                       </div>
                     </li>
                    
